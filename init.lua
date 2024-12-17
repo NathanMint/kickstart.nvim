@@ -44,7 +44,7 @@ What is Kickstart?
 Kickstart Guide:
 
   TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
-
+re
     If you don't know what this means, type the following:
       - <escape key>
       - :
@@ -204,6 +204,117 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- EDIT --
+-- from the https://medium.com/@nikmas_dev/vscode-neovim-setup-keyboard-centric-powerful-reliable-clean-and-aesthetic-development-582d34297985
+
+-- call vscode commands from neovim
+
+-- general VSCODE INTERFACE keymaps
+vim.keymap.set("n", "<leader>z", ":lua require('vscode').action('workbench.action.toggleZenMode')<CR>", { noremap = true, silent = true})
+vim.keymap.set('n', '<leader>q', "<cmd>lua require('vscode').action('workbench.action.terminal.kill')<CR>", { noremap = true, silent = true })
+vim.keymap.set({ "n", "x", "i" }, "<C-d>", function()
+  vscode.with_insert(function()
+    vscode.action("editor.action.addSelectionToNextFindMatch")
+  end)
+end)
+vim.keymap.set({"n", "v"}, "<leader>o", "<cmd>lua require('vscode').action('workbench.action.output.toggleOutput')<CR>", { noremap = true, silent = true})
+vim.keymap.set('t', '<leader>w', [[<C-\><C-n>]], { noremap = true, silent = true })
+
+local keymap = vim.keymap.set
+local opts = { noremap = true, silent = true }
+
+
+-- remap leader key
+keymap("n", "<Space>", "", opts)
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
+-- yank to system clipboard
+keymap({"n", "v"}, "<leader>y", '"+y', opts)
+
+-- paste from system clipboard
+keymap({"n", "v"}, "<leader>p", '"+p', opts)
+
+-- better indent handling
+keymap("v", "<", "<gv", opts)
+keymap("v", ">", ">gv", opts)
+
+-- move text up and down
+keymap("v", "J", ":m .+1<CR>==", opts)
+keymap("v", "K", ":m .-2<CR>==", opts)
+keymap("x", "J", ":move '>+1<CR>gv-gv", opts)
+keymap("x", "K", ":move '<-2<CR>gv-gv", opts)
+
+-- paste preserves primal yanked piece
+keymap("v", "p", '"_dP', opts)
+
+keymap({"n", "v"}, "<leader>t", "<cmd>lua require('vscode').action('workbench.action.terminal.toggleTerminal')<CR>")
+keymap({"n", "v"}, "<leader>b", "<cmd>lua require('vscode').action('editor.debug.action.toggleBreakpoint')<CR>")
+keymap({"n", "v"}, "<leader>d", "<cmd>lua require('vscode').action('editor.action.showHover')<CR>")
+keymap({"n", "v"}, "<leader>a", "<cmd>lua require('vscode').action('editor.action.quickFix')<CR>")
+keymap({"n", "v"}, "<leader>sp", "<cmd>lua require('vscode').action('workbench.actions.view.problems')<CR>")
+keymap({"n", "v"}, "<leader>cn", "<cmd>lua require('vscode').action('notifications.clearAll')<CR>")
+keymap({"n", "v"}, "<leader>ff", "<cmd>lua require('vscode').action('workbench.action.quickOpen')<CR>")
+keymap({"n", "v"}, "<leader>cp", "<cmd>lua require('vscode').action('workbench.action.showCommands')<CR>")
+keymap({"n", "v"}, "<leader>pr", "<cmd>lua require('vscode').action('code-runner.run')<CR>")
+keymap({"n", "v"}, "<leader>fd", "<cmd>lua require('vscode').action('editor.action.formatDocument')<CR>")
+
+-- harpoon keymaps
+keymap({"n", "v"}, "<leader>ha", "<cmd>lua require('vscode').action('vscode-harpoon.addEditor')<CR>")
+keymap({"n", "v"}, "<leader>ho", "<cmd>lua require('vscode').action('vscode-harpoon.editorQuickPick')<CR>")
+keymap({"n", "v"}, "<leader>he", "<cmd>lua require('vscode').action('vscode-harpoon.editEditors')<CR>")
+keymap({"n", "v"}, "<leader>h1", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor1')<CR>")
+keymap({"n", "v"}, "<leader>h2", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor2')<CR>")
+keymap({"n", "v"}, "<leader>h3", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor3')<CR>")
+keymap({"n", "v"}, "<leader>h4", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor4')<CR>")
+keymap({"n", "v"}, "<leader>h5", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor5')<CR>")
+keymap({"n", "v"}, "<leader>h6", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor6')<CR>")
+keymap({"n", "v"}, "<leader>h7", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor7')<CR>")
+keymap({"n", "v"}, "<leader>h8", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor8')<CR>")
+keymap({"n", "v"}, "<leader>h9", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor9')<CR>")
+
+-- project manager keymaps
+keymap({"n", "v"}, "<leader>pa", "<cmd>lua require('vscode').action('projectManager.saveProject')<CR>")
+keymap({"n", "v"}, "<leader>po", "<cmd>lua require('vscode').action('projectManager.listProjectsNewWindow')<CR>")
+keymap({"n", "v"}, "<leader>pe", "<cmd>lua require('vscode').action('projectManager.editProjects')<CR>")
+
+-- removes highlighting after escaping vim search
+vim.api.nvim_set_keymap("n", "<Esc>", "<Esc>:noh<CR>", opts)
+
+vim.keymap.set('i', 'jk', '<ESC>', { noremap = true, silent = true })
+vim.keymap.set('c', 'jk', '<ESC>', { noremap = true, silent = true })
+vim.keymap.set('v', 'jk', '<ESC>', { noremap = true, silent = true })
+
+-- EDIT --
+function DeleteFirstOccurrence()
+  local start_pos = vim.fn.getpos "'<"
+  local end_pos = vim.fn.getpos "'>"
+
+  -- Ask the user for input (the character(s) to search for)
+  local char_to_delete = vim.fn.input 'Enter character(s) to delete: '
+
+  local escaped_pattern = vim.fn.escape(char_to_delete, '/')
+  --local escaped_replacement = vim.fn.escape(replacement, '/')
+  -- Check if input is not empty
+  if char_to_delete ~= '' then
+    -- Iterate over each line in the visual selection
+    for line_num = start_pos[2], end_pos[2] do
+      -- Move to the beginning of the line
+      vim.api.nvim_win_set_cursor(0, { line_num, 0 })
+      -- Search for the character(s) in the line and delete the first occurrence
+
+      vim.api.nvim_command(':s/' .. escaped_pattern .. '/')
+      --vim.api.nvim_command('normal! /' .. char_to_delete .. '<CR>')
+      --vim.api.nvim_command 'normal! "_x'
+    end
+  else
+    print 'No character(s) entered'
+  end
+end
+
+vim.api.nvim_set_keymap('v', '<leader>b', ":'<,'>norm I", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('v', '<leader>B', ':lua DeleteFirstOccurrence()<CR>', { noremap = true, silent = true })
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -225,12 +336,54 @@ vim.opt.rtp:prepend(lazypath)
 --
 --  To update plugins you can run
 --    :Lazy update
---
+-- EDIT --
+vim.opt.autoindent = true
+vim.opt.smartindent = true
+vim.opt.cindent = true
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-
+  'numToStr/Comment.nvim',
+  config = function()
+    require('Comment').setup()
+  end,
+  -- EDIT --
+  {
+    'jedrzejboczar/possession.nvim',
+    config = function()
+      require('possession').setup {
+        commands = {
+          save = 'SSave',
+          load = 'SLoad',
+          delete = 'SDelete',
+          list = 'SList',
+        },
+        autosave = {
+          current = true,
+        },
+        -- optional: add your specific setup options here
+      }
+    end,
+  },
+  {
+    'windwp/nvim-autopairs',
+    config = function()
+      require('nvim-autopairs').setup {
+        check_ts = true,
+        }
+    end,
+  },
+  {
+    'willthbill/opener.nvim',
+    config = function()
+      require('opener').setup {
+        hidden=true,
+        respect_gitignore=false,
+        root_dir="~",
+      }
+    end,
+  },
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -607,7 +760,7 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        basedpyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -951,6 +1104,5 @@ require('lazy').setup({
     },
   },
 })
-
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
